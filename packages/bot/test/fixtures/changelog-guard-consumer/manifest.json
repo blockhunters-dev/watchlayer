@@ -1,0 +1,11 @@
+{
+  "source": "genlayer-changelog-guard/consumer (project C)",
+  "base_commit": "8710f10b1594387c9274672b3088edfbcb400e7d",
+  "note": "alert.mjs is untracked and index.mjs/read-verdict.mjs are modified in C's working tree at base_commit; no committed C revision contains buildAlert yet. Files are pinned by content hash. When C commits, replace the files, record that commit here and update the hashes.",
+  "files": {
+    "decide.mjs": "a8105ebfb7fd59e976a1ddea17bcc7966b2ea45963e6ea25912cbdff89b1fe4a",
+    "alert.mjs": "6617d292cdedfae7eb1a8a1426a5b6e04cfa0c04badeab1ff886cdd76f60d085",
+    "read-verdict.mjs": "8176672b9a8c11a86217208b3079ab262fa0ebe69ab08abd7564f3e577446e40",
+    "index.mjs": "19cd1aab536252a3fb9e9ecf6a8d4613213fbd15d081fef7eb108058cfaf6066"
+  }
+}

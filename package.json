@@ -1,0 +1,19 @@
+{
+  "name": "watchlayer",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm test --workspaces",
+    "spike": "npm run spike -w @watchlayer/indexer",
+    "dev:indexer": "npm run dev -w @watchlayer/indexer"
+  },
+  "license": "MIT"
+}

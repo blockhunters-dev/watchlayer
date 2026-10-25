@@ -1,0 +1,11 @@
+import { createClient, chains } from "genlayer-js";
+const b = chains.testnetBradbury;
+console.log("sdk chain", b.id, b.rpcUrls?.default?.http, b.consensusMainContract?.address ?? null, b.stakingContract?.address ?? null);
+const chain = { ...b, id: 4221, rpcUrls: { default: { http: [process.env.RPC ?? "https://rpc.testnet-chain.genlayer.com"] } } };
+const c = createClient({ chain });
+const t = async (n, f) => { try { const r = await f(); console.log(n, "OK", JSON.stringify(r, (_, v) => typeof v === "bigint" ? v.toString() : v).slice(0, 300)); return r; } catch (e) { console.log(n, "FAIL", String(e.shortMessage ?? e.message).slice(0, 200)); } };
+await t("epochInfo", () => c.getEpochInfo());
+const act = await t("active", () => c.getActiveValidators());
+await t("joined", () => c.getJoinedValidators());
+await t("banned", () => c.getBannedValidators());
+if (act?.[0]) await t("validatorInfo", () => c.getValidatorInfo(act[0]));
