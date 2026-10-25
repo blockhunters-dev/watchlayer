@@ -1,0 +1,7 @@
+watchlayer.blockhunters.dev {
+	encode zstd gzip
+	handle_path /api/* {
+		reverse_proxy watchlayer-prod-indexer:8080
+	}
+	reverse_proxy watchlayer-prod-dashboard:3000
+}

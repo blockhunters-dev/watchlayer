@@ -1,0 +1,55 @@
+# Run by the deploy server as: docker compose -p watchlayer-<env> --env-file <env file> -f deploy/compose.yml up -d --build
+# No service publishes ports; the shared Caddy reaches them on the external "edge" network.
+x-common: &common
+  restart: unless-stopped
+  build: { context: .., dockerfile: Dockerfile }
+  environment: &env
+    RPC_URL: ${RPC_URL:-https://rpc.testnet-chain.genlayer.com}
+    CHAIN_ID: ${CHAIN_ID:-4221}
+
+services:
+  indexer:
+    <<: *common
+    build: { context: .., dockerfile: Dockerfile, target: indexer }
+    environment:
+      <<: *env
+      POLL_SECONDS: ${POLL_SECONDS:-120}
+      RETENTION_DAYS: ${RETENTION_DAYS:-14}
+    volumes: [indexer-data:/data]
+    networks:
+      default: {}
+      edge: { aliases: ["${STACK:?STACK must be set}-indexer"] }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  dashboard:
+    <<: *common
+    build: { context: .., dockerfile: Dockerfile, target: dashboard }
+    depends_on: [indexer]
+    networks:
+      default: {}
+      edge: { aliases: ["${STACK}-dashboard"] }
+
+  bot:
+    <<: *common
+    build: { context: .., dockerfile: Dockerfile, target: bot }
+    profiles: [bot]
+    depends_on: [indexer]
+    environment:
+      <<: *env
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?TELEGRAM_BOT_TOKEN must be set when the bot profile is on}
+      ALERT_CHECK_SECONDS: ${ALERT_CHECK_SECONDS:-120}
+      SILENT_HOURS: ${SILENT_HOURS:-6}
+      CHANGELOG_GUARD_ADDRESS: ${CHANGELOG_GUARD_ADDRESS:-}
+      NODE_VERSION: ${NODE_VERSION:-}
+    volumes: [bot-data:/data]
+
+volumes:
+  indexer-data: {}
+  bot-data: {}
+
+networks:
+  edge: { external: true }

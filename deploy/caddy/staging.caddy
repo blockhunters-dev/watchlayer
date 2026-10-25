@@ -1,0 +1,8 @@
+staging.watchlayer.blockhunters.dev {
+	encode zstd gzip
+	header X-Robots-Tag "noindex, nofollow"
+	handle_path /api/* {
+		reverse_proxy watchlayer-staging-indexer:8080
+	}
+	reverse_proxy watchlayer-staging-dashboard:3000
+}
