@@ -17,10 +17,13 @@ async function retry<T>(fn: () => Promise<T>, tries = 5): Promise<T> {
 export interface HourScan { txCount: number | null; avgBlockSeconds: number | null }
 
 /**
- * Walks blocks back over the last hour: exact tx count and average block interval (~27 s on Phase 2 at the time of writing).
- * If the cap is hit before reaching a block older than one hour the window is incomplete, so the count is null (unknown)
- * rather than a silent undercount.
+ * Walks blocks back over the last hour: user transactions and average block interval.
+ * Bradbury is an Arbitrum Orbit chain: every block starts with one ArbitrumInternal (type 0x6a) system transaction,
+ * which is not user throughput, so it is not counted.
+ * With ~2 s blocks an hour is ~1,800 blocks; when the cap is hit first, the hourly rate is extrapolated from the
+ * covered window if it spans at least MIN_WINDOW seconds, else it is null (unknown) rather than a silent undercount.
  */
+const MIN_WINDOW = 300;
 export async function scanLastHour(
   getBlock: (n: bigint) => Promise<{ timestamp: bigint; transactions: unknown[] }>,
   latest: bigint, now: number, maxBlocks = 600,
@@ -31,10 +34,12 @@ export async function scanLastHour(
     const ts = Number(b.timestamp);
     if (ts < now - 3600) { complete = true; break; }
     if (blocks === 0) newest = ts;
-    oldest = ts; blocks++; txCount += b.transactions.length;
+    oldest = ts; blocks++; txCount += Math.max(0, b.transactions.length - 1);
   }
   if (latest + 1n <= BigInt(blocks)) complete = true; // reached genesis
-  return { txCount: complete ? txCount : null, avgBlockSeconds: blocks >= 2 ? (newest - oldest) / (blocks - 1) : null };
+  const covered = now - oldest;
+  const rate = complete ? txCount : blocks > 0 && covered >= MIN_WINDOW ? Math.round((txCount * 3600) / covered) : null;
+  return { txCount: rate, avgBlockSeconds: blocks >= 2 ? (newest - oldest) / (blocks - 1) : null };
 }
 
 /** Reads every page of a (startIndex, size) paginated list; stops on a short page. */

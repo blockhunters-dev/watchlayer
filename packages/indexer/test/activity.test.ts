@@ -24,19 +24,24 @@ describe("scanLastHour", () => {
     "9": { timestamp: 9_900n, transactions: [1] },
     "8": { timestamp: 5_000n, transactions: [1, 2, 3] }, // older than 1h -> stop
   };
-  it("sums blocks within the last hour, stops at the first older one, averages block interval", async () => {
-    expect(await scanLastHour(async (n) => blocks[n.toString()], 10n, 10_000)).toEqual({ txCount: 3, avgBlockSeconds: 100 });
+  it("sums user txs (not the per-block system tx) within the last hour, stops at the first older one", async () => {
+    expect(await scanLastHour(async (n) => blocks[n.toString()], 10n, 10_000)).toEqual({ txCount: 1, avgBlockSeconds: 100 });
   });
   it("respects maxBlocks", async () => {
     expect(await scanLastHour(async (n) => blocks[n.toString()], 10n, 10_000, 1)).toEqual({ txCount: null, avgBlockSeconds: null });
   });
-  it("reports unknown (not an undercount) when the cap is hit before the hour is covered", async () => {
+  it("reports unknown when the cap is hit and the covered window is too short to extrapolate", async () => {
     const dense = async (n: bigint) => ({ timestamp: 10_000n - (10n - n), transactions: [1] }); // all blocks within the hour
     expect(await scanLastHour(dense, 10n, 10_000, 3)).toEqual({ txCount: null, avgBlockSeconds: 1 });
   });
   it("is complete when the chain is shorter than the hour", async () => {
     const dense = async (n: bigint) => ({ timestamp: 10_000n - (3n - n), transactions: [1, 2] });
-    expect(await scanLastHour(dense, 3n, 10_000)).toEqual({ txCount: 8, avgBlockSeconds: 1 });
+    expect(await scanLastHour(dense, 3n, 10_000)).toEqual({ txCount: 4, avgBlockSeconds: 1 });
+  });
+  it("extrapolates the hourly rate from at least 5 minutes of blocks when the cap is hit", async () => {
+    // 2 s blocks, each with the system tx plus one user tx; 300 blocks cover 598 s
+    const fast = async (n: bigint) => ({ timestamp: 10_000n - 2n * (1000n - n), transactions: [0, 1] });
+    expect(await scanLastHour(fast, 1000n, 10_000, 300)).toEqual({ txCount: Math.round((300 * 3600) / 598), avgBlockSeconds: 2 });
   });
 });
 

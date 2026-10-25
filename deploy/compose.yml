@@ -28,7 +28,8 @@ services:
   dashboard:
     <<: *common
     build: { context: .., dockerfile: Dockerfile, target: dashboard }
-    depends_on: [indexer]
+    depends_on:
+      indexer: { condition: service_healthy }
     networks:
       default: {}
       edge: { aliases: ["${STACK}-dashboard"] }
@@ -37,7 +38,8 @@ services:
     <<: *common
     build: { context: .., dockerfile: Dockerfile, target: bot }
     profiles: [bot]
-    depends_on: [indexer]
+    depends_on:
+      indexer: { condition: service_healthy }
     environment:
       <<: *env
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}  # required only with the "bot" profile (COMPOSE_PROFILES=bot)
