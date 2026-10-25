@@ -1,6 +1,7 @@
 import { createServer, type Server } from "node:http";
 import { balanceSamples, banHistory, firstSeenAt, latestEpoch, latestValidators, networkEpochs, networkHistory, nonceSamples, rpcHealth, validatorEpochs, validatorHistory, type Db } from "./db.js";
 import { depositActivation, operatorActivity, runwayDays } from "./derive.js";
+import type { UpgradeState } from "./upgrades.js";
 
 type Row = Record<string, unknown>;
 
@@ -32,7 +33,7 @@ function shape(db: Db, r: Row) {
   };
 }
 
-export function createApi(db: Db, clock: () => number = () => Math.floor(Date.now() / 1000)): Server {
+export function createApi(db: Db, clock: () => number = () => Math.floor(Date.now() / 1000), upgrades?: () => UpgradeState): Server {
   return createServer((req, res) => {
     const send = (code: number, body: unknown) => {
       res.writeHead(code, { "content-type": "application/json", "access-control-allow-origin": "*" });
@@ -56,6 +57,7 @@ export function createApi(db: Db, clock: () => number = () => Math.floor(Date.no
         validators: { total: vs.length, active: count("active"), pending: count("pending"), banned: count("banned"), needsPriming: count("needs_priming") },
       });
     }
+    if (path === "/upgrades") return send(200, upgrades ? upgrades() : { enabled: false, contract: null, network: null, latest: null, history: [], checkedAt: null, error: null });
     if (path === "/validators") return send(200, (latestValidators(db) as Row[]).map((r) => shape(db, r)));
     if (path === "/network/history") return send(200, networkHistory(db).map((r) => ({ t: r.t, epoch: r.epoch, activeCount: r.active_count, txPerHour: r.tx_last_hour })));
     if (path === "/network/epochs") return send(200, networkEpochs(db));

@@ -36,3 +36,10 @@ export interface ValidatorEpoch { epoch: string; t: number; status: Status; vSta
 export interface NetworkEpoch { epoch: string; t: number; txPerHour: number | null; totalStake: string; validators: Network["validators"] }
 export const getValidatorEpochs = (a: string) => get<ValidatorEpoch[]>(`/validators/${a}/epochs`);
 export const getNetworkEpochs = () => get<NetworkEpoch[]>("/network/epochs");
+
+export interface UpgradeVerdict {
+  version: string; network: string; mandatory: boolean; breaking: boolean; deadline: string | null;
+  config_changes: string[]; env_changes: string[]; actions: string[]; source_url: string; firstSeenAt: number;
+}
+export interface Upgrades { enabled: boolean; contract: string | null; network: string | null; latest: UpgradeVerdict | null; history: UpgradeVerdict[]; checkedAt: number | null; error: string | null }
+export const getUpgrades = () => get<Upgrades>("/upgrades");

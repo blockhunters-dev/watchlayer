@@ -15,10 +15,12 @@ const bot = createBot(token, store, api);
 
 // Mandatory-upgrade alerts come from Changelog Guard via its consumer library; all four settings are needed.
 let upgrade: UpgradeDeps | undefined;
-const guard = { path: env.CHANGELOG_GUARD_CONSUMER, address: env.CHANGELOG_GUARD_ADDRESS, running: env.NODE_VERSION };
+// The consumer is vendored (same files as the pinned test fixture); CHANGELOG_GUARD_CONSUMER may point elsewhere.
+const vendored = new URL("../test/fixtures/changelog-guard-consumer/index.mjs", import.meta.url).pathname;
+const guard = { path: env.CHANGELOG_GUARD_CONSUMER || vendored, address: env.CHANGELOG_GUARD_ADDRESS, running: env.NODE_VERSION };
 if (guard.path && guard.address && guard.running) {
   const { createClient, chains } = await import("genlayer-js");
-  const rpc = env.RPC_URL ?? "https://rpc.testnet-chain.genlayer.com";
+  const rpc = env.GENLAYER_RPC_URL ?? "https://rpc-bradbury.genlayer.com"; // gen_call needs a GenLayer node RPC
   upgrade = {
     consumer: await loadConsumer(guard.path),
     client: createClient({ chain: { ...chains.testnetBradbury, id: Number(env.CHAIN_ID ?? 4221), rpcUrls: { default: { http: [rpc] } } } }),

@@ -9,7 +9,7 @@ const ALERTS = [
   ["🔇", "Operator silent", "An active validator's operator sends no transaction for 6 hours, which usually means the node stopped."],
   ["🔧", "Needs priming", "The validator moves to the needs-priming state."],
   ["✅", "Stake activated", "A pending deposit becomes active stake."],
-  ["⬆️", "Mandatory upgrade", "Changelog Guard reports a mandatory node release that your version does not meet (enabled once its contract is live)."],
+  ["⬆️", "Mandatory upgrade", "Changelog Guard publishes a mandatory node release newer than the tracked version (see the Upgrades tab)."],
 ] as const;
 
 export default function Alerts() {

@@ -76,3 +76,9 @@ One row per epoch in which the validator was observed, oldest first, taken from 
 ## Planned (not implemented; do not depend on them yet)
 - Backfill of epochs before the indexer started.
 Changing a planned endpoint is free; changing an implemented one requires updating this file and tests in the same commit.
+
+## GET /upgrades
+Latest Changelog Guard verdict and every release WatchLayer has seen. Read-only `gen_call` of `get_latest(network)` on
+`CHANGELOG_GUARD_ADDRESS` through `GENLAYER_RPC_URL`, every `UPGRADE_CHECK_SECONDS` (600).
+`{ enabled, contract, network, latest, history[], checkedAt, error }`; each verdict has `version, network, mandatory,
+breaking, deadline, config_changes[], env_changes[], actions[], source_url, firstSeenAt`. `enabled: false` when no address is set.
