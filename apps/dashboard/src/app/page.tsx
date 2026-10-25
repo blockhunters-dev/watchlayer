@@ -37,7 +37,7 @@ export default async function Overview() {
         <Stat label="Epoch" value={net.epoch} sub={net.nextEpochEstimate ? `next ${relTime(net.nextEpochEstimate, now)}` : undefined} />
         <Stat label="Validators" value={c.total} sub={`${c.active} active · ${c.pending} pending · ${c.banned} banned · ${c.needsPriming} need priming`} />
         <Stat label="Total stake (active)" value={gen(net.totalStake)} />
-        <Stat label="Transactions / hour" value={net.txPerHour ?? "—"} sub="blocks of the last hour" />
+        <Stat label="Transactions / hour" value={net.txPerHour ?? "—"} sub="user transactions, last hour" />
         <Stat label="Block interval" value={net.avgBlockSeconds === null ? "—" : `${net.avgBlockSeconds.toFixed(0)} s`} sub="average over the last hour" />
         <Stat label="Data source uptime (24h)" value={net.rpc.uptime24h === null ? "—" : `${(net.rpc.uptime24h * 100).toFixed(1)}%`}
           sub={`${net.rpc.runs24h} collection runs · last ${net.rpc.snapshotDurationMs === null ? "—" : Math.round(net.rpc.snapshotDurationMs / 1000) + " s"}`} />
