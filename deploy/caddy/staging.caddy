@@ -1,4 +1,5 @@
-staging.watchlayer.blockhunters.dev {
+# blockhunters.services is proxied by Cloudflare in Flexible mode: Cloudflare -> origin over HTTP, so plain HTTP here.
+http://watchlayer.blockhunters.services {
 	encode zstd gzip
 	header X-Robots-Tag "noindex, nofollow"
 	handle_path /api/* {
