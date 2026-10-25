@@ -40,7 +40,7 @@ services:
     depends_on: [indexer]
     environment:
       <<: *env
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?TELEGRAM_BOT_TOKEN must be set when the bot profile is on}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}  # required only with the "bot" profile (COMPOSE_PROFILES=bot)
       ALERT_CHECK_SECONDS: ${ALERT_CHECK_SECONDS:-120}
       SILENT_HOURS: ${SILENT_HOURS:-6}
       CHANGELOG_GUARD_ADDRESS: ${CHANGELOG_GUARD_ADDRESS:-}
