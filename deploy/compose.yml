@@ -14,6 +14,9 @@ services:
     environment:
       <<: *env
       POLL_SECONDS: ${POLL_SECONDS:-120}
+      GENLAYER_RPC_URL: ${GENLAYER_RPC_URL:-https://rpc-bradbury.genlayer.com}
+      CHANGELOG_GUARD_ADDRESS: ${CHANGELOG_GUARD_ADDRESS:-}
+      CHANGELOG_GUARD_NETWORK: ${CHANGELOG_GUARD_NETWORK:-bradbury-phase2}
       RETENTION_DAYS: ${RETENTION_DAYS:-14}
     volumes: [indexer-data:/data]
     networks:
@@ -45,7 +48,9 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}  # required only with the "bot" profile (COMPOSE_PROFILES=bot)
       ALERT_CHECK_SECONDS: ${ALERT_CHECK_SECONDS:-120}
       SILENT_HOURS: ${SILENT_HOURS:-6}
+      GENLAYER_RPC_URL: ${GENLAYER_RPC_URL:-https://rpc-bradbury.genlayer.com}
       CHANGELOG_GUARD_ADDRESS: ${CHANGELOG_GUARD_ADDRESS:-}
+      CHANGELOG_GUARD_NETWORK: ${CHANGELOG_GUARD_NETWORK:-bradbury-phase2}
       NODE_VERSION: ${NODE_VERSION:-}
     volumes: [bot-data:/data]
 

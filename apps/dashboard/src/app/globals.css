@@ -191,3 +191,10 @@ section[id] { scroll-margin-top: 130px; }
   .hbar { grid-template-columns: minmax(90px, 130px) 1fr auto; } .hero::after { inset: 0; opacity: .5; } .search { margin-left: 0; max-width: none; }
   .vhead { padding: 20px; }
 }
+
+/* Upgrades */
+.verdict .vtop { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.flags { display: flex; flex-wrap: wrap; gap: 8px; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.key { font-family: var(--font-mono), monospace; font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 3px 8px; }
+.actions { margin: 8px 0 0; padding-left: 18px; } .actions li { margin: 4px 0; }

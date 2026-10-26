@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const TABS = [["/", "Overview"], ["/validators", "Validators"], ["/bans", "Bans"], ["/epochs", "Epochs"], ["/alerts", "Alerts"]] as const;
+const TABS = [["/", "Overview"], ["/validators", "Validators"], ["/bans", "Bans"], ["/epochs", "Epochs"], ["/upgrades", "Upgrades"], ["/alerts", "Alerts"]] as const;
 
 export function Tabs() {
   const path = usePathname() ?? "/";
