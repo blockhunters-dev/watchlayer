@@ -33,6 +33,11 @@ services:
     build: { context: .., dockerfile: Dockerfile, target: dashboard }
     depends_on:
       indexer: { condition: service_healthy }
+    environment:
+      <<: *env
+      # Not the bare "indexer": every stack on the shared edge network has a service with that name,
+      # so Docker DNS would round-robin between them. The STACK alias is unique to this stack.
+      API_URL: http://${STACK}-indexer:8080
     networks:
       default: {}
       edge: { aliases: ["${STACK}-dashboard"] }
